@@ -8,20 +8,21 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            touch-action: manipulation; /* スマホでの操作を最適化 */
+            touch-action: manipulation;
         }
         .map-container {
             position: relative;
             width: 90%;
             max-width: 300px;
             height: 500px;
-            background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Tokyo_rail_map.png') no-repeat center;
-            background-size: cover;
             margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .station {
-            position: absolute;
-            width: 80px;
+            position: relative;
+            width: 120px;
             height: 50px;
             border-radius: 10px;
             background-color: white;
@@ -30,17 +31,16 @@
             align-items: center;
             justify-content: center;
             font-size: 12px;
-            left: 110px; /* すべての駅の横位置を統一 */
+            margin: 5px 0;
         }
         .event-station {
-            background-color: lightblue; /* イベントマスの色 */
+            background-color: lightblue;
         }
         .player {
             position: absolute;
             width: 40px;
             height: 40px;
             transition: top 0.5s;
-            left: 100px; /* プレイヤーの横位置も統一 */
         }
         .player1 {
             filter: hue-rotate(200deg);
@@ -67,33 +67,38 @@
             background-color: red;
             transition: width 0.3s ease-in-out;
         }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border: 2px solid black;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
+        .event-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: darkblue;
+            margin: 10px auto;
         }
-        .popup button {
-            margin-top: 10px;
+        .restart-btn {
+            display: none;
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
         }
         @media (max-width: 600px) {
             .map-container {
-                height: 400px;
+                height: auto;
             }
             .station {
-                width: 70px;
+                width: 100px;
                 height: 40px;
                 font-size: 10px;
             }
             .player {
                 width: 30px;
                 height: 30px;
+            }
+            .event-text {
+                font-size: 14px;
             }
         }
     </style>
@@ -106,42 +111,38 @@
         <div class="stress-level" id="stressLevel"></div>
     </div>
     <p>通勤ストレスゲージ: <span id="stressText">0%</span></p>
+    <p id="eventText" class="event-text"></p>
 
     <div class="map-container" id="map">
-        <div class="station" id="station-0" style="top: 30px;">北千住</div>
-        <div class="station event-station" id="station-1" style="top: 80px;">日暮里</div>
-        <div class="station" id="station-2" style="top: 130px;">上野</div>
-        <div class="station event-station" id="station-3" style="top: 180px;">秋葉原</div>
-        <div class="station" id="station-4" style="top: 230px;">東京</div>
-        <div class="station event-station" id="station-5" style="top: 280px;">新橋</div>
-        <div class="station" id="station-6" style="top: 330px;">品川</div>
-        <div class="station event-station" id="station-7" style="top: 380px;">川崎</div>
-        <div class="station" id="station-8" style="top: 430px;">横浜</div>
+        <div class="station" id="station-0">北千住</div>
+        <div class="station event-station" id="station-1">日暮里</div>
+        <div class="station" id="station-2">上野</div>
+        <div class="station event-station" id="station-3">秋葉原</div>
+        <div class="station" id="station-4">東京</div>
+        <div class="station event-station" id="station-5">新橋</div>
+        <div class="station" id="station-6">品川</div>
+        <div class="station event-station" id="station-7">川崎</div>
+        <div class="station" id="station-8">横浜</div>
 
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2">
     </div>
 
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
-
-    <!-- ポップアップ -->
-    <div class="popup" id="eventPopup">
-        <p id="eventMessage"></p>
-        <button onclick="closePopup()">OK</button>
-    </div>
+    <button id="restartBtn" class="restart-btn" onclick="resetGame()">もう一度やりますか？</button>
 
     <script>
         const stations = [
-            { name: "北千住", y: 30 },
-            { name: "日暮里", y: 80, event: true },
-            { name: "上野", y: 130 },
-            { name: "秋葉原", y: 180, event: true },
-            { name: "東京", y: 230 },
-            { name: "新橋", y: 280, event: true },
-            { name: "品川", y: 330 },
-            { name: "川崎", y: 380, event: true },
-            { name: "横浜", y: 430 }
+            { name: "北千住", event: false },
+            { name: "日暮里", event: true },
+            { name: "上野", event: false },
+            { name: "秋葉原", event: true },
+            { name: "東京", event: false },
+            { name: "新橋", event: true },
+            { name: "品川", event: false },
+            { name: "川崎", event: true },
+            { name: "横浜", event: false }
         ];
 
         let positions = [0, 0];
@@ -159,22 +160,24 @@
             updateBoard();
 
             if (positions[currentPlayer] === stations.length - 1) {
-                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
+                document.getElementById("eventText").textContent = `🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`;
+                document.getElementById("restartBtn").style.display = "block";
                 return;
             }
 
             if (stations[positions[currentPlayer]].event) {
                 let event = randomEvent();
-                document.getElementById("eventMessage").innerText = event.message;
-                document.getElementById("eventPopup").style.display = "block";
+                document.getElementById("eventText").textContent = event.message;
                 updateStress(event.stress);
             } else {
-                switchTurn();
+                document.getElementById("eventText").textContent = "";
             }
+
+            switchTurn();
         }
 
         function updateBoard() {
-            document.getElementById(`player${currentPlayer + 1}`).style.top = stations[positions[currentPlayer]].y + "px";
+            document.getElementById(`player${currentPlayer + 1}`).style.top = `${positions[currentPlayer] * 60}px`;
         }
 
         function switchTurn() {
@@ -188,9 +191,15 @@
             document.getElementById("stressText").textContent = stressLevel + "%";
         }
 
-        function closePopup() {
-            document.getElementById("eventPopup").style.display = "none";
-            switchTurn();
+        function resetGame() {
+            positions = [0, 0];
+            stressLevel = 0;
+            updateBoard();
+            document.getElementById("stressLevel").style.width = "0%";
+            document.getElementById("stressText").textContent = "0%";
+            document.getElementById("eventText").textContent = "";
+            document.getElementById("turn-info").textContent = "プレイヤー1の番です";
+            document.getElementById("restartBtn").style.display = "none";
         }
 
         function randomEvent() {
