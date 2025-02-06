@@ -53,4 +53,99 @@
             "新橋", "品川", "", "川崎", "鶴見", "横浜"
         ];
 
-        const boardSize
+        const boardSize = stations.length;
+        let positions = [0, 0]; // プレイヤーの位置
+        let currentPlayer = 0;
+        const board = document.getElementById("board");
+
+        // 通勤イベント設定
+        const specialSpaces = {
+            6: { type: "back", to: 5, message: "🚧 東京駅での乗り換えミス！1駅戻る！" },
+            9: { type: "warp", to: 13, message: "🚄 品川駅から京急特急！横浜へワープ！" }
+        };
+
+        function createBoard() {
+            for (let i = 0; i < boardSize; i++) {
+                let cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.id = "cell-" + i;
+                cell.textContent = stations[i];
+
+                if (specialSpaces[i]) {
+                    if (specialSpaces[i].type === "warp") cell.classList.add("warp");
+                    if (specialSpaces[i].type === "back") cell.classList.add("back");
+                }
+
+                let player1Icon = document.createElement("img");
+                player1Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747376.png"; // 青い電車
+                player1Icon.classList.add("player", "player1");
+                player1Icon.style.display = "none";
+
+                let player2Icon = document.createElement("img");
+                player2Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747677.png"; // 赤い電車
+                player2Icon.classList.add("player", "player2");
+                player2Icon.style.display = "none";
+
+                cell.appendChild(player1Icon);
+                cell.appendChild(player2Icon);
+                board.appendChild(cell);
+            }
+            updateBoard();
+        }
+
+        function rollDice() {
+            let diceRoll = Math.floor(Math.random() * 3) + 1;
+            document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
+            movePlayer(diceRoll);
+        }
+
+        function movePlayer(diceRoll) {
+            positions[currentPlayer] += diceRoll;
+
+            if (positions[currentPlayer] >= boardSize - 1) {
+                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
+                resetGame();
+                return;
+            }
+
+            updateBoard();
+            checkSpecialEvent();
+        }
+
+        function checkSpecialEvent() {
+            let currentPos = positions[currentPlayer];
+            if (specialSpaces[currentPos]) {
+                setTimeout(() => {
+                    alert(specialSpaces[currentPos].message);
+                    if (specialSpaces[currentPos].type === "warp" || specialSpaces[currentPos].type === "back") {
+                        positions[currentPlayer] = specialSpaces[currentPos].to;
+                    }
+                    updateBoard();
+                    switchTurn();
+                }, 500);
+            } else {
+                switchTurn();
+            }
+        }
+
+        function switchTurn() {
+            currentPlayer = currentPlayer === 0 ? 1 : 0;
+            document.getElementById("turn-info").textContent = `プレイヤー${currentPlayer + 1}の番です`;
+        }
+
+        function updateBoard() {
+            document.querySelectorAll(".player").forEach(img => img.style.display = "none");
+            document.getElementById("cell-" + positions[0]).querySelector(".player1").style.display = "block";
+            document.getElementById("cell-" + positions[1]).querySelector(".player2").style.display = "block";
+        }
+
+        function resetGame() {
+            positions = [0, 0];
+            currentPlayer = 0;
+            updateBoard();
+        }
+
+        createBoard();
+    </script>
+</body>
+</html>
