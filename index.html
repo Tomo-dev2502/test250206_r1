@@ -11,28 +11,29 @@
         }
         .map-container {
             position: relative;
-            width: 600px;
-            height: 400px;
+            width: 700px;
+            height: 500px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Tokyo_rail_map.png') no-repeat center;
             background-size: cover;
             margin: 20px auto;
         }
         .station {
             position: absolute;
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background-color: white;
             border: 2px solid black;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 14px;
+            font-weight: bold;
         }
         .player {
             position: absolute;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 40px;
         }
         .warp { background-color: lightgreen; }
         .delay { background-color: orange; }
@@ -44,20 +45,20 @@
     <h1>🚆 出勤すごろくゲーム！</h1>
     <p>北千住駅から横浜駅へ通勤しよう！</p>
     <div class="map-container" id="map">
-        <!-- 各駅の配置（実際の位置関係に近づける） -->
-        <div class="station" id="station-0" style="top: 20px; left: 100px;">北千住</div>
-        <div class="station" id="station-1" style="top: 50px; left: 120px;">日暮里</div>
-        <div class="station" id="station-2" style="top: 80px; left: 150px;">上野</div>
-        <div class="station" id="station-3" style="top: 120px; left: 180px;">秋葉原</div>
-        <div class="station" id="station-4" style="top: 150px; left: 200px;">東京</div>
-        <div class="station" id="station-5" style="top: 170px; left: 250px;">新橋</div>
-        <div class="station" id="station-6" style="top: 200px; left: 270px;">品川</div>
-        <div class="station" id="station-7" style="top: 230px; left: 300px;">川崎</div>
-        <div class="station" id="station-8" style="top: 260px; left: 350px;">横浜</div>
+        <!-- 各駅の配置（間隔を広げたバージョン） -->
+        <div class="station" id="station-0" style="top: 30px; left: 100px;">北千住</div>
+        <div class="station" id="station-1" style="top: 80px; left: 150px;">日暮里</div>
+        <div class="station" id="station-2" style="top: 130px; left: 200px;">上野</div>
+        <div class="station" id="station-3" style="top: 180px; left: 250px;">秋葉原</div>
+        <div class="station" id="station-4" style="top: 230px; left: 300px;">東京</div>
+        <div class="station" id="station-5" style="top: 280px; left: 350px;">新橋</div>
+        <div class="station" id="station-6" style="top: 330px; left: 400px;">品川</div>
+        <div class="station" id="station-7" style="top: 380px; left: 450px;">川崎</div>
+        <div class="station" id="station-8" style="top: 430px; left: 500px;">横浜</div>
 
         <!-- プレイヤーの駒 -->
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 20px; left: 100px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747677.png" class="player player2" id="player2" style="top: 20px; left: 120px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px; left: 100px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747677.png" class="player player2" id="player2" style="top: 30px; left: 120px;">
     </div>
 
     <button onclick="rollDice()">🎲 サイコロを振る</button>
@@ -66,19 +67,20 @@
 
     <script>
         const stations = [
-            { name: "北千住", x: 100, y: 20 },
-            { name: "日暮里", x: 120, y: 50 },
-            { name: "上野", x: 150, y: 80 },
-            { name: "秋葉原", x: 180, y: 120 },
-            { name: "東京", x: 200, y: 150 },
-            { name: "新橋", x: 250, y: 170 },
-            { name: "品川", x: 270, y: 200 },
-            { name: "川崎", x: 300, y: 230 },
-            { name: "横浜", x: 350, y: 260 }
+            { name: "北千住", x: 100, y: 30 },
+            { name: "日暮里", x: 150, y: 80 },
+            { name: "上野", x: 200, y: 130 },
+            { name: "秋葉原", x: 250, y: 180 },
+            { name: "東京", x: 300, y: 230 },
+            { name: "新橋", x: 350, y: 280 },
+            { name: "品川", x: 400, y: 330 },
+            { name: "川崎", x: 450, y: 380 },
+            { name: "横浜", x: 500, y: 430 }
         ];
 
         let positions = [0, 0]; 
         let currentPlayer = 0; 
+
         function rollDice() {
             let diceRoll = Math.floor(Math.random() * 3) + 1;
             document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
