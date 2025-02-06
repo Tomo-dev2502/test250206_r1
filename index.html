@@ -14,7 +14,7 @@
             position: relative;
             width: 90%;
             max-width: 300px;
-            height: 600px; /* マスが増えたため高さを調整 */
+            height: 600px;
             margin: 20px auto;
             display: flex;
             flex-direction: column;
@@ -104,8 +104,8 @@
     </style>
 </head>
 <body onclick="rollDice()">
-    <h1>🚆 GHQ出勤すごろくゲーム！</h1>
-    <p>北千住駅から横浜駅へ出勤しよう！</p>
+    <h1>🚆 出勤すごろくゲーム！</h1>
+    <p>北千住駅から横浜駅へ通勤しよう！</p>
 
     <div class="stress-bar">
         <div class="stress-level" id="stressLevel"></div>
@@ -115,12 +115,12 @@
 
     <div class="map-container" id="map">
         <div class="station" id="station-0">北千住</div>
-        <div class="station" id="station-1">南千住</div> <!-- 追加 -->
-        <div class="station" id="station-2">三ノ輪</div> <!-- 追加 -->
+        <div class="station event-station" id="station-1">南千住</div>
+        <div class="station event-station" id="station-2">三ノ輪</div>
         <div class="station event-station" id="station-3">日暮里</div>
         <div class="station" id="station-4">上野</div>
         <div class="station event-station" id="station-5">秋葉原</div>
-        <div class="station" id="station-6">東京</div>
+        <div class="station event-station" id="station-6">東京</div>
         <div class="station event-station" id="station-7">新橋</div>
         <div class="station event-station" id="station-8">品川</div>
         <div class="station event-station" id="station-9">川崎</div>
@@ -137,12 +137,12 @@
     <script>
         const stations = [
             { name: "北千住", event: false },
-            { name: "南千住", event: false },
-            { name: "三ノ輪", event: false },
+            { name: "南千住", event: true },  // イベント追加
+            { name: "三ノ輪", event: true },  // イベント追加
             { name: "日暮里", event: true },
             { name: "上野", event: false },
             { name: "秋葉原", event: true },
-            { name: "東京", event: false },
+            { name: "東京", event: true },  // イベント追加
             { name: "新橋", event: true },
             { name: "品川", event: true },
             { name: "川崎", event: true },
@@ -187,7 +187,8 @@
         }
 
         function updateBoard() {
-            document.getElementById(`player${currentPlayer + 1}`).style.top = `${positions[currentPlayer] * 50}px`;
+            document.getElementById("player1").style.top = `${positions[0] * 50}px`;
+            document.getElementById("player2").style.top = `${positions[1] * 50}px`;
         }
 
         function switchTurn() {
@@ -205,14 +206,11 @@
             positions = [0, 0];
             stressLevel = 0;
             updateBoard();
-            document.getElementById("stressLevel").style.width = "0%";
-            document.getElementById("stressText").textContent = "0%";
-            document.getElementById("eventText").textContent = "";
             document.getElementById("restartBtn").style.display = "none";
         }
 
         function randomEvent() {
-            return { message: "🚧 満員電車！ストレス+10", stress: 10 };
+            return { message: "🚆 乗り換え成功！ストレス-5", stress: -5 };
         }
     </script>
 </body>
