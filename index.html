@@ -25,6 +25,7 @@
         }
         .player1 { background-color: lightblue; }
         .player2 { background-color: lightcoral; }
+        .event { background-color: yellow; }
         .dice { font-size: 20px; margin: 10px; }
     </style>
 </head>
@@ -41,12 +42,22 @@
         let currentPlayer = 0; // 0: プレイヤー1, 1: プレイヤー2
         const board = document.getElementById("board");
 
+        // イベントマスの定義
+        const eventSpaces = {
+            3: { type: "back", value: 1, message: "イベント発生！1マス戻る！" },
+            6: { type: "extraTurn", message: "イベント発生！もう一度サイコロを振る！" },
+            9: { type: "back", value: 1, message: "イベント発生！1マス戻る！" }
+        };
+
         function createBoard() {
             for (let i = 0; i < boardSize; i++) {
                 let cell = document.createElement("div");
                 cell.classList.add("cell");
                 cell.id = "cell-" + i;
                 cell.textContent = i + 1;
+                if (eventSpaces[i]) {
+                    cell.classList.add("event");
+                }
                 board.appendChild(cell);
             }
             updateBoard();
@@ -60,12 +71,37 @@
 
         function movePlayer(diceRoll) {
             positions[currentPlayer] += diceRoll;
+
             if (positions[currentPlayer] >= boardSize - 1) {
                 alert(`プレイヤー${currentPlayer + 1}の勝ち！ 🎉`);
                 resetGame();
                 return;
             }
+
             updateBoard();
+            checkEvent();
+        }
+
+        function checkEvent() {
+            let currentPos = positions[currentPlayer];
+            if (eventSpaces[currentPos]) {
+                setTimeout(() => {
+                    alert(eventSpaces[currentPos].message);
+                    if (eventSpaces[currentPos].type === "back") {
+                        positions[currentPlayer] = Math.max(0, positions[currentPlayer] - eventSpaces[currentPos].value);
+                    } else if (eventSpaces[currentPos].type === "extraTurn") {
+                        rollDice(); // もう一度サイコロを振る
+                        return;
+                    }
+                    updateBoard();
+                    switchTurn();
+                }, 500);
+            } else {
+                switchTurn();
+            }
+        }
+
+        function switchTurn() {
             currentPlayer = currentPlayer === 0 ? 1 : 0;
             document.getElementById("turn-info").textContent = `プレイヤー${currentPlayer + 1}の番です`;
         }
