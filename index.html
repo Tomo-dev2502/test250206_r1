@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>迷路すごろく</title>
+    <title>出勤すごろく 🚆</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -22,7 +22,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
+            font-size: 12px;
+            text-align: center;
             position: relative;
         }
         .player {
@@ -31,13 +32,14 @@
             height: 40px;
         }
         .warp { background-color: lightgreen; }
-        .loop { background-color: orange; }
-        .event { background-color: yellow; }
+        .delay { background-color: orange; }
+        .back { background-color: yellow; }
         .dice { font-size: 20px; margin: 10px; }
     </style>
 </head>
 <body>
-    <h1>迷路すごろくゲーム</h1>
+    <h1>🚆 出勤すごろくゲーム！</h1>
+    <p>北千住駅から横浜駅へ通勤しよう！</p>
     <div class="board" id="board"></div>
     <button onclick="rollDice()">🎲 サイコロを振る</button>
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
@@ -49,12 +51,20 @@
         let currentPlayer = 0; // 0: プレイヤー1, 1: プレイヤー2
         const board = document.getElementById("board");
 
-        // 特殊マス（分岐・迷路風）
+        // 駅名リスト
+        const stations = [
+            "北千住", "南千住", "日暮里", "上野", "御徒町",
+            "秋葉原", "神田", "東京", "新橋", "浜松町",
+            "田町", "品川", "大崎", "大井町", "蒲田",
+            "川崎", "鶴見", "東神奈川", "横浜"
+        ];
+
+        // イベント設定（通勤トラブル）
         const specialSpaces = {
-            4: { type: "warp", to: 8, message: "ワープ！マス8へ移動！" },
-            9: { type: "loop", to: 3, message: "ループ発生！マス3に戻る！" },
-            14: { type: "warp", to: 19, message: "ショートカット！マス19へ移動！" },
-            17: { type: "loop", to: 12, message: "ループ発生！マス12に戻る！" }
+            4: { type: "warp", to: 7, message: "🚄 快速！東京駅へワープ！" },
+            8: { type: "back", to: 6, message: "🚧 乗り換えミス！2駅戻る！" },
+            12: { type: "delay", message: "🚃 山手線遅延！1回休み！" },
+            17: { type: "warp", to: 19, message: "🚄 京急特急！横浜へワープ！" }
         };
 
         function createBoard() {
@@ -62,21 +72,21 @@
                 let cell = document.createElement("div");
                 cell.classList.add("cell");
                 cell.id = "cell-" + i;
-                cell.textContent = i + 1;
+                cell.textContent = stations[i] || "横浜";
 
                 if (specialSpaces[i]) {
                     if (specialSpaces[i].type === "warp") cell.classList.add("warp");
-                    if (specialSpaces[i].type === "loop") cell.classList.add("loop");
+                    if (specialSpaces[i].type === "delay") cell.classList.add("delay");
+                    if (specialSpaces[i].type === "back") cell.classList.add("back");
                 }
 
-                // プレイヤー画像を表示するための要素を追加
                 let player1Icon = document.createElement("img");
-                player1Icon.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png"; // 青い駒
+                player1Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png"; // 青い電車
                 player1Icon.classList.add("player", "player1");
                 player1Icon.style.display = "none";
 
                 let player2Icon = document.createElement("img");
-                player2Icon.src = "https://cdn-icons-png.flaticon.com/512/847/847969.png"; // 赤い駒
+                player2Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png"; // 赤い電車
                 player2Icon.classList.add("player", "player2");
                 player2Icon.style.display = "none";
 
@@ -97,7 +107,7 @@
             positions[currentPlayer] += diceRoll;
 
             if (positions[currentPlayer] >= boardSize - 1) {
-                alert(`プレイヤー${currentPlayer + 1}の勝ち！ 🎉`);
+                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！勝ち！`);
                 resetGame();
                 return;
             }
@@ -111,7 +121,7 @@
             if (specialSpaces[currentPos]) {
                 setTimeout(() => {
                     alert(specialSpaces[currentPos].message);
-                    if (specialSpaces[currentPos].type === "warp" || specialSpaces[currentPos].type === "loop") {
+                    if (specialSpaces[currentPos].type === "warp" || specialSpaces[currentPos].type === "back") {
                         positions[currentPlayer] = specialSpaces[currentPos].to;
                     }
                     updateBoard();
@@ -137,7 +147,6 @@
             positions = [0, 0];
             currentPlayer = 0;
             updateBoard();
-            document.getElementById("turn-info").textContent = "プレイヤー1の番です";
         }
 
         createBoard();
