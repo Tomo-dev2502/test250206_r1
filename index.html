@@ -67,13 +67,20 @@
             background-color: red;
             transition: width 0.3s ease-in-out;
         }
-        .event-card {
-            background: white;
-            border: 2px solid black;
-            padding: 10px;
-            margin: 10px auto;
-            max-width: 300px;
+        .popup {
             display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 2px solid black;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        .popup button {
+            margin-top: 10px;
         }
         @media (max-width: 600px) {
             .map-container {
@@ -115,21 +122,25 @@
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px;">
     </div>
 
-    <button onclick="resetGame()">🔄 最初から</button>
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
-    <div class="event-card" id="eventCard"></div>
+
+    <!-- ポップアップ -->
+    <div class="popup" id="eventPopup">
+        <p id="eventMessage"></p>
+        <button onclick="closePopup()">OK</button>
+    </div>
 
     <script>
         const stations = [
             { name: "北千住", y: 30 },
-            { name: "日暮里", y: 80 },
+            { name: "日暮里", y: 80, event: true },
             { name: "上野", y: 130 },
-            { name: "秋葉原", y: 180 },
+            { name: "秋葉原", y: 180, event: true },
             { name: "東京", y: 230 },
-            { name: "新橋", y: 280 },
+            { name: "新橋", y: 280, event: true },
             { name: "品川", y: 330 },
-            { name: "川崎", y: 380 },
+            { name: "川崎", y: 380, event: true },
             { name: "横浜", y: 430 }
         ];
 
@@ -149,21 +160,17 @@
 
             if (positions[currentPlayer] === stations.length - 1) {
                 alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
-                resetGame();
                 return;
             }
 
-            let event = randomEvent();
-            document.getElementById("eventCard").innerText = event.message;
-            document.getElementById("eventCard").style.display = "block";
-            updateStress(event.stress);
-            if (stressLevel >= 100) {
-                alert("💥 通勤ストレスMAX！通勤断念…");
-                resetGame();
-                return;
+            if (stations[positions[currentPlayer]].event) {
+                let event = randomEvent();
+                document.getElementById("eventMessage").innerText = event.message;
+                document.getElementById("eventPopup").style.display = "block";
+                updateStress(event.stress);
+            } else {
+                switchTurn();
             }
-
-            switchTurn();
         }
 
         function updateBoard() {
@@ -181,13 +188,9 @@
             document.getElementById("stressText").textContent = stressLevel + "%";
         }
 
-        function resetGame() {
-            positions = [0, 0];
-            stressLevel = 0;
-            updateBoard();
-            document.getElementById("stressLevel").style.width = "0%";
-            document.getElementById("stressText").textContent = "0%";
-            document.getElementById("turn-info").textContent = "プレイヤー1の番です";
+        function closePopup() {
+            document.getElementById("eventPopup").style.display = "none";
+            switchTurn();
         }
 
         function randomEvent() {
