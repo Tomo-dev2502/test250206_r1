@@ -34,6 +34,7 @@
             position: absolute;
             width: 40px;
             height: 40px;
+            transition: top 0.5s, left 0.5s;
         }
         .player1 {
             filter: hue-rotate(200deg);
@@ -69,6 +70,9 @@
             display: none;
         }
         @media (max-width: 600px) {
+            .map-container {
+                height: 400px;
+            }
             .station {
                 width: 40px;
                 height: 40px;
@@ -82,7 +86,7 @@
     </style>
 </head>
 <body>
-    <h1>🚆 GHQ出勤すごろくゲーム！</h1>
+    <h1>🚆 出勤すごろくゲーム！</h1>
     <p>北千住駅から横浜駅へ通勤しよう！</p>
 
     <div class="stress-bar">
@@ -101,8 +105,8 @@
         <div class="station" id="station-7" style="top: 380px; left: 450px;">川崎</div>
         <div class="station" id="station-8" style="top: 430px; left: 500px;">横浜</div>
 
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1">
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px; left: 100px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px; left: 110px;">
     </div>
 
     <button onclick="rollDice()">🎲 サイコロを振る</button>
@@ -126,7 +130,7 @@
         let positions = [0, 0];
         let currentPlayer = 0;
         let stressLevel = 0;
-        
+
         function rollDice() {
             let diceRoll = Math.floor(Math.random() * 3) + 1;
             document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
