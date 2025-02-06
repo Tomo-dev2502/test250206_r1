@@ -132,7 +132,6 @@
 
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
-    <button id="restartBtn" class="restart-btn" onclick="resetGame()">もう一度やりますか？</button>
 
     <script>
         const stations = [
@@ -204,10 +203,11 @@
 
         function randomEvent() {
             const events = [
-                { message: "🚆 乗り換えミス！1駅戻る", stress: 10 },
-                { message: "🚧 満員電車で押し潰される！ストレス+20", stress: 20 },
-                { message: "☕ 通勤カフェで一息。ストレス-5", stress: -5 }
-            ];
+            { message: "🚆 乗り換えミス！1駅戻る", stress: 10, move: -1 },
+            { message: "🚧 満員電車で押し潰される！ストレス+40", stress: 40, move: 0 },
+            { message: "☕ 通勤カフェで一息。ストレス-5", stress: -5, move: 0 },
+            { message: "⏳ 電車遅延！1ターン休み", stress: 15, move: 0, skip: true },
+            { message: "💼 仕事のメールが来た！ストレス+20", stress: 20, move: 0 },            ];
             return events[Math.floor(Math.random() * events.length)];
         }
     </script>
