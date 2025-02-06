@@ -12,7 +12,7 @@
         .map-container {
             position: relative;
             width: 90%;
-            max-width: 700px;
+            max-width: 300px;
             height: 500px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Tokyo_rail_map.png') no-repeat center;
             background-size: cover;
@@ -20,21 +20,23 @@
         }
         .station {
             position: absolute;
-            width: 50px;
+            width: 80px;
             height: 50px;
-            border-radius: 50%;
+            border-radius: 10px;
             background-color: white;
             border: 2px solid black;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 12px;
+            left: 110px; /* すべての駅の横位置を統一 */
         }
         .player {
             position: absolute;
             width: 40px;
             height: 40px;
-            transition: top 0.5s, left 0.5s;
+            transition: top 0.5s;
+            left: 100px; /* プレイヤーも横位置を統一 */
         }
         .player1 {
             filter: hue-rotate(200deg);
@@ -74,7 +76,7 @@
                 height: 400px;
             }
             .station {
-                width: 40px;
+                width: 70px;
                 height: 40px;
                 font-size: 10px;
             }
@@ -95,36 +97,37 @@
     <p>通勤ストレスゲージ: <span id="stressText">0%</span></p>
 
     <div class="map-container" id="map">
-        <div class="station" id="station-0" style="top: 30px; left: 100px;">北千住</div>
-        <div class="station" id="station-1" style="top: 80px; left: 150px;">日暮里</div>
-        <div class="station" id="station-2" style="top: 130px; left: 200px;">上野</div>
-        <div class="station" id="station-3" style="top: 180px; left: 250px;">秋葉原</div>
-        <div class="station" id="station-4" style="top: 230px; left: 300px;">東京</div>
-        <div class="station" id="station-5" style="top: 280px; left: 350px;">新橋</div>
-        <div class="station" id="station-6" style="top: 330px; left: 400px;">品川</div>
-        <div class="station" id="station-7" style="top: 380px; left: 450px;">川崎</div>
-        <div class="station" id="station-8" style="top: 430px; left: 500px;">横浜</div>
+        <div class="station" id="station-0" style="top: 30px;">北千住</div>
+        <div class="station" id="station-1" style="top: 80px;">日暮里</div>
+        <div class="station" id="station-2" style="top: 130px;">上野</div>
+        <div class="station" id="station-3" style="top: 180px;">秋葉原</div>
+        <div class="station" id="station-4" style="top: 230px;">東京</div>
+        <div class="station" id="station-5" style="top: 280px;">新橋</div>
+        <div class="station" id="station-6" style="top: 330px;">品川</div>
+        <div class="station" id="station-7" style="top: 380px;">川崎</div>
+        <div class="station" id="station-8" style="top: 430px;">横浜</div>
 
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px; left: 100px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px; left: 110px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px;">
     </div>
 
     <button onclick="rollDice()">🎲 サイコロを振る</button>
+    <button onclick="resetGame()">🔄 最初から</button>
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
     <div class="event-card" id="eventCard"></div>
 
     <script>
         const stations = [
-            { name: "北千住", x: 100, y: 30 },
-            { name: "日暮里", x: 150, y: 80 },
-            { name: "上野", x: 200, y: 130 },
-            { name: "秋葉原", x: 250, y: 180 },
-            { name: "東京", x: 300, y: 230 },
-            { name: "新橋", x: 350, y: 280 },
-            { name: "品川", x: 400, y: 330 },
-            { name: "川崎", x: 450, y: 380 },
-            { name: "横浜", x: 500, y: 430 }
+            { name: "北千住", y: 30 },
+            { name: "日暮里", y: 80 },
+            { name: "上野", y: 130 },
+            { name: "秋葉原", y: 180 },
+            { name: "東京", y: 230 },
+            { name: "新橋", y: 280 },
+            { name: "品川", y: 330 },
+            { name: "川崎", y: 380 },
+            { name: "横浜", y: 430 }
         ];
 
         let positions = [0, 0];
@@ -162,7 +165,6 @@
 
         function updateBoard() {
             document.getElementById(`player${currentPlayer + 1}`).style.top = stations[positions[currentPlayer]].y + "px";
-            document.getElementById(`player${currentPlayer + 1}`).style.left = stations[positions[currentPlayer]].x + "px";
         }
 
         function switchTurn() {
@@ -173,6 +175,16 @@
         function updateStress(amount) {
             stressLevel = Math.min(100, stressLevel + amount);
             document.getElementById("stressLevel").style.width = stressLevel + "%";
+            document.getElementById("stressText").textContent = stressLevel + "%";
+        }
+
+        function resetGame() {
+            positions = [0, 0];
+            stressLevel = 0;
+            updateBoard();
+            document.getElementById("stressLevel").style.width = "0%";
+            document.getElementById("stressText").textContent = "0%";
+            document.getElementById("turn-info").textContent = "プレイヤー1の番です";
         }
 
         function randomEvent() {
