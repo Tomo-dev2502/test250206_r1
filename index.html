@@ -262,7 +262,6 @@
     <span>🎉 祝！ゴール 🎉</span>
     <p>お疲れ様でした！あなたの通勤が完了しました！</p>
 </div>
-
 <script>
     function triggerGoalAnimation() {
         document.getElementById("goalBanner").style.display = "flex";
@@ -275,22 +274,27 @@
             firework.style.animationDuration = `${1 + Math.random()}s`;
             document.body.appendChild(firework);
 
-            setTimeout(() => firework.remove(), 2000);
+            // 2.5秒後に削除（時間を少し長めに）
+            setTimeout(() => {
+                firework.style.opacity = "0";
+                setTimeout(() => firework.remove(), 500);
+            }, 2500);
         }
 
         setTimeout(() => {
             document.getElementById("goalBanner").style.display = "none";
-        }, 4000);
+        }, 5000);
     }
 
     function movePlayer(diceRoll) {
         positions[currentPlayer] = Math.min(positions[currentPlayer] + diceRoll, stations.length - 1);
         updateBoard();
 
+        // ゴールしたらアニメーション発動＆ターン切り替えをしない
         if (positions[currentPlayer] === stations.length - 1) {
             document.getElementById("eventText").textContent = `🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`;
             triggerGoalAnimation();
-            return;
+            return; // switchTurn() を実行しない
         }
 
         switchTurn();
