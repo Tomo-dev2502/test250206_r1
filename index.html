@@ -101,8 +101,8 @@
         <div class="station" id="station-7" style="top: 380px; left: 450px;">川崎</div>
         <div class="station" id="station-8" style="top: 430px; left: 500px;">横浜</div>
 
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px; left: 100px;">
-        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px; left: 120px;">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2">
     </div>
 
     <button onclick="rollDice()">🎲 サイコロを振る</button>
@@ -111,26 +111,73 @@
     <div class="event-card" id="eventCard"></div>
 
     <script>
-        const events = [
-            { message: "🚆 快速に乗れて2駅進む！", effect: 2, stress: 0 },
-            { message: "🚧 満員電車！1駅戻る…", effect: -1, stress: 10 },
-            { message: "⏳ 山手線遅延！1回休み", effect: 0, stress: 20 },
-            { message: "🎟 特急券ゲット！次回3駅進む", effect: 3, stress: 0 }
+        const stations = [
+            { name: "北千住", x: 100, y: 30 },
+            { name: "日暮里", x: 150, y: 80 },
+            { name: "上野", x: 200, y: 130 },
+            { name: "秋葉原", x: 250, y: 180 },
+            { name: "東京", x: 300, y: 230 },
+            { name: "新橋", x: 350, y: 280 },
+            { name: "品川", x: 400, y: 330 },
+            { name: "川崎", x: 450, y: 380 },
+            { name: "横浜", x: 500, y: 430 }
         ];
+
+        let positions = [0, 0];
+        let currentPlayer = 0;
         let stressLevel = 0;
-        function updateStress(amount) {
-            stressLevel = Math.min(100, stressLevel + amount);
-            document.getElementById("stressLevel").style.width = stressLevel + "%";
-            document.getElementById("stressText").textContent = stressLevel + "%";
-            if (stressLevel >= 100) alert("💥 通勤ストレスMAX！仕事を諦めた…");
-        }
+        
         function rollDice() {
             let diceRoll = Math.floor(Math.random() * 3) + 1;
             document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
-            let event = events[Math.floor(Math.random() * events.length)];
+            movePlayer(diceRoll);
+        }
+
+        function movePlayer(diceRoll) {
+            positions[currentPlayer] = Math.min(positions[currentPlayer] + diceRoll, stations.length - 1);
+            updateBoard();
+
+            if (positions[currentPlayer] === stations.length - 1) {
+                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
+                resetGame();
+                return;
+            }
+
+            let event = randomEvent();
             document.getElementById("eventCard").innerText = event.message;
             document.getElementById("eventCard").style.display = "block";
             updateStress(event.stress);
+            if (stressLevel >= 100) {
+                alert("💥 通勤ストレスMAX！通勤断念…");
+                resetGame();
+                return;
+            }
+
+            switchTurn();
+        }
+
+        function updateBoard() {
+            document.getElementById(`player${currentPlayer + 1}`).style.top = stations[positions[currentPlayer]].y + "px";
+            document.getElementById(`player${currentPlayer + 1}`).style.left = stations[positions[currentPlayer]].x + "px";
+        }
+
+        function switchTurn() {
+            currentPlayer = currentPlayer === 0 ? 1 : 0;
+            document.getElementById("turn-info").textContent = `プレイヤー${currentPlayer + 1}の番です`;
+        }
+
+        function updateStress(amount) {
+            stressLevel = Math.min(100, stressLevel + amount);
+            document.getElementById("stressLevel").style.width = stressLevel + "%";
+        }
+
+        function randomEvent() {
+            const events = [
+                { message: "🚆 快速で1駅進む！", stress: -5 },
+                { message: "🚧 満員電車！ストレス+10", stress: 10 },
+                { message: "⏳ 遅延！1回休み", stress: 20 }
+            ];
+            return events[Math.floor(Math.random() * events.length)];
         }
     </script>
 </body>
