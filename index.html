@@ -159,6 +159,12 @@
             positions[currentPlayer] = Math.min(positions[currentPlayer] + diceRoll, stations.length - 1);
             updateBoard();
 
+            if (stressLevel >= 100) {
+                document.getElementById("eventText").textContent = `💥 プレイヤー${currentPlayer + 1}のストレスが限界に！通勤断念...`;
+                document.getElementById("restartBtn").style.display = "block";
+                return;
+            }
+
             if (positions[currentPlayer] === stations.length - 1) {
                 document.getElementById("eventText").textContent = `🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`;
                 document.getElementById("restartBtn").style.display = "block";
@@ -203,7 +209,7 @@
         }
 
         function randomEvent() {
-            return { message: "🚧 満員電車！ストレス+20", stress: 20 };
+            return { message: "🚧 満員電車！ストレス+10", stress: 10 };
         }
     </script>
 </body>
