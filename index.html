@@ -43,10 +43,10 @@
             transition: top 0.5s;
         }
         .player1 {
-            filter: hue-rotate(200deg);
+            filter: hue-rotate(200deg); /* 青色 */
         }
         .player2 {
-            filter: hue-rotate(0deg);
+            filter: hue-rotate(0deg) brightness(1.5) contrast(1.2); /* 赤色 */
         }
         .dice {
             font-size: 20px;
@@ -137,12 +137,12 @@
     <script>
         const stations = [
             { name: "北千住", event: false },
-            { name: "南千住", event: true },  // イベント追加
-            { name: "三ノ輪", event: true },  // イベント追加
+            { name: "南千住", event: true },
+            { name: "三ノ輪", event: true },
             { name: "日暮里", event: true },
             { name: "上野", event: false },
             { name: "秋葉原", event: true },
-            { name: "東京", event: true },  // イベント追加
+            { name: "東京", event: true },
             { name: "新橋", event: true },
             { name: "品川", event: true },
             { name: "川崎", event: true },
@@ -187,8 +187,8 @@
         }
 
         function updateBoard() {
-            document.getElementById("player1").style.top = `${positions[0] * 50}px`;
-            document.getElementById("player2").style.top = `${positions[1] * 50}px`;
+            document.getElementById(`player1`).style.top = `${positions[0] * 50}px`;
+            document.getElementById(`player2`).style.top = `${positions[1] * 50}px`;
         }
 
         function switchTurn() {
@@ -202,15 +202,13 @@
             document.getElementById("stressText").textContent = stressLevel + "%";
         }
 
-        function resetGame() {
-            positions = [0, 0];
-            stressLevel = 0;
-            updateBoard();
-            document.getElementById("restartBtn").style.display = "none";
-        }
-
         function randomEvent() {
-            return { message: "🚆 乗り換え成功！ストレス-5", stress: -5 };
+            const events = [
+                { message: "🚆 乗り換えミス！1駅戻る", stress: 10 },
+                { message: "🚧 満員電車で押し潰される！ストレス+20", stress: 20 },
+                { message: "☕ 通勤カフェで一息。ストレス-5", stress: -5 }
+            ];
+            return events[Math.floor(Math.random() * events.length)];
         }
     </script>
 </body>
