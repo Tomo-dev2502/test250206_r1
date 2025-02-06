@@ -262,39 +262,43 @@
     <span>🎉 祝！ゴール 🎉</span>
     <p>お疲れ様でした！あなたの通勤が完了しました！</p>
 </div>
-<script>
+    <script>
     function triggerGoalAnimation() {
-        document.getElementById("goalBanner").style.display = "flex";
-
-        for (let i = 0; i < 10; i++) {
-            let firework = document.createElement("div");
-            firework.classList.add("firework");
-            firework.style.left = `${Math.random() * 100}%`;
-            firework.style.top = `${Math.random() * 100}%`;
-            firework.style.animationDuration = `${1 + Math.random()}s`;
-            document.body.appendChild(firework);
-
-            // 2.5秒後に削除（時間を少し長めに）
-            setTimeout(() => {
-                firework.style.opacity = "0";
-                setTimeout(() => firework.remove(), 500);
-            }, 2500);
-        }
-
         setTimeout(() => {
-            document.getElementById("goalBanner").style.display = "none";
-        }, 5000);
+            document.getElementById("goalBanner").style.display = "flex";
+
+            for (let i = 0; i < 10; i++) {
+                let firework = document.createElement("div");
+                firework.classList.add("firework");
+                firework.style.left = `${Math.random() * 100}%`;
+                firework.style.top = `${Math.random() * 100}%`;
+                firework.style.animationDuration = `${1 + Math.random()}s`;
+                document.body.appendChild(firework);
+
+                // 3秒後にフェードアウトして削除
+                setTimeout(() => {
+                    firework.style.opacity = "0";
+                    setTimeout(() => firework.remove(), 500);
+                }, 3000);
+            }
+
+            setTimeout(() => {
+                document.getElementById("goalBanner").style.display = "none";
+            }, 5000);
+        }, 500); // プレイヤーの移動後に少し待ってから開始
     }
 
     function movePlayer(diceRoll) {
         positions[currentPlayer] = Math.min(positions[currentPlayer] + diceRoll, stations.length - 1);
         updateBoard();
 
-        // ゴールしたらアニメーション発動＆ターン切り替えをしない
+        // ゴール時のアニメーションを移動後に発動
         if (positions[currentPlayer] === stations.length - 1) {
-            document.getElementById("eventText").textContent = `🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`;
-            triggerGoalAnimation();
-            return; // switchTurn() を実行しない
+            setTimeout(() => {
+                document.getElementById("eventText").textContent = `🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`;
+                triggerGoalAnimation();
+            }, 500); // 0.5秒待ってからゴール演出
+            return; // ターンを進めない
         }
 
         switchTurn();
