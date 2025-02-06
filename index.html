@@ -11,7 +11,8 @@
         }
         .map-container {
             position: relative;
-            width: 700px;
+            width: 90%;
+            max-width: 700px;
             height: 500px;
             background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Tokyo_rail_map.png') no-repeat center;
             background-size: cover;
@@ -19,16 +20,15 @@
         }
         .station {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background-color: white;
             border: 2px solid black;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 12px;
         }
         .player {
             position: absolute;
@@ -36,22 +36,61 @@
             height: 40px;
         }
         .player1 {
-            filter: hue-rotate(200deg); /* 青色 */
+            filter: hue-rotate(200deg);
         }
         .player2 {
-            filter: hue-rotate(0deg); /* 赤色（デフォルト） */
+            filter: hue-rotate(0deg);
         }
-        .warp { background-color: lightgreen; }
-        .delay { background-color: orange; }
-        .back { background-color: yellow; }
-        .dice { font-size: 20px; margin: 10px; }
+        .dice {
+            font-size: 20px;
+            margin: 10px;
+        }
+        .stress-bar {
+            width: 100%;
+            max-width: 300px;
+            height: 20px;
+            background-color: lightgray;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px auto;
+        }
+        .stress-level {
+            width: 0%;
+            height: 100%;
+            background-color: red;
+            transition: width 0.3s ease-in-out;
+        }
+        .event-card {
+            background: white;
+            border: 2px solid black;
+            padding: 10px;
+            margin: 10px auto;
+            max-width: 300px;
+            display: none;
+        }
+        @media (max-width: 600px) {
+            .station {
+                width: 40px;
+                height: 40px;
+                font-size: 10px;
+            }
+            .player {
+                width: 30px;
+                height: 30px;
+            }
+        }
     </style>
 </head>
 <body>
     <h1>🚆 出勤すごろくゲーム！</h1>
     <p>北千住駅から横浜駅へ通勤しよう！</p>
+
+    <div class="stress-bar">
+        <div class="stress-level" id="stressLevel"></div>
+    </div>
+    <p>通勤ストレスゲージ: <span id="stressText">0%</span></p>
+
     <div class="map-container" id="map">
-        <!-- 各駅の配置 -->
         <div class="station" id="station-0" style="top: 30px; left: 100px;">北千住</div>
         <div class="station" id="station-1" style="top: 80px; left: 150px;">日暮里</div>
         <div class="station" id="station-2" style="top: 130px; left: 200px;">上野</div>
@@ -62,7 +101,6 @@
         <div class="station" id="station-7" style="top: 380px; left: 450px;">川崎</div>
         <div class="station" id="station-8" style="top: 430px; left: 500px;">横浜</div>
 
-        <!-- プレイヤーの駒（色違い） -->
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px; left: 100px;">
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px; left: 120px;">
     </div>
@@ -70,56 +108,29 @@
     <button onclick="rollDice()">🎲 サイコロを振る</button>
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
+    <div class="event-card" id="eventCard"></div>
 
     <script>
-        const stations = [
-            { name: "北千住", x: 100, y: 30 },
-            { name: "日暮里", x: 150, y: 80 },
-            { name: "上野", x: 200, y: 130 },
-            { name: "秋葉原", x: 250, y: 180 },
-            { name: "東京", x: 300, y: 230 },
-            { name: "新橋", x: 350, y: 280 },
-            { name: "品川", x: 400, y: 330 },
-            { name: "川崎", x: 450, y: 380 },
-            { name: "横浜", x: 500, y: 430 }
+        const events = [
+            { message: "🚆 快速に乗れて2駅進む！", effect: 2, stress: 0 },
+            { message: "🚧 満員電車！1駅戻る…", effect: -1, stress: 10 },
+            { message: "⏳ 山手線遅延！1回休み", effect: 0, stress: 20 },
+            { message: "🎟 特急券ゲット！次回3駅進む", effect: 3, stress: 0 }
         ];
-
-        let positions = [0, 0]; 
-        let currentPlayer = 0; 
-
+        let stressLevel = 0;
+        function updateStress(amount) {
+            stressLevel = Math.min(100, stressLevel + amount);
+            document.getElementById("stressLevel").style.width = stressLevel + "%";
+            document.getElementById("stressText").textContent = stressLevel + "%";
+            if (stressLevel >= 100) alert("💥 通勤ストレスMAX！仕事を諦めた…");
+        }
         function rollDice() {
             let diceRoll = Math.floor(Math.random() * 3) + 1;
             document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
-            movePlayer(diceRoll);
-        }
-
-        function movePlayer(diceRoll) {
-            positions[currentPlayer] = Math.min(positions[currentPlayer] + diceRoll, stations.length - 1);
-
-            if (positions[currentPlayer] === stations.length - 1) {
-                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
-                resetGame();
-                return;
-            }
-
-            updateBoard();
-            switchTurn();
-        }
-
-        function updateBoard() {
-            document.getElementById(`player${currentPlayer + 1}`).style.top = stations[positions[currentPlayer]].y + "px";
-            document.getElementById(`player${currentPlayer + 1}`).style.left = stations[positions[currentPlayer]].x + "px";
-        }
-
-        function switchTurn() {
-            currentPlayer = currentPlayer === 0 ? 1 : 0;
-            document.getElementById("turn-info").textContent = `プレイヤー${currentPlayer + 1}の番です`;
-        }
-
-        function resetGame() {
-            positions = [0, 0];
-            updateBoard();
-            document.getElementById("turn-info").textContent = "プレイヤー1の番です";
+            let event = events[Math.floor(Math.random() * events.length)];
+            document.getElementById("eventCard").innerText = event.message;
+            document.getElementById("eventCard").style.display = "block";
+            updateStress(event.stress);
         }
     </script>
 </body>
