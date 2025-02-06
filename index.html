@@ -8,6 +8,7 @@
         body {
             font-family: Arial, sans-serif;
             text-align: center;
+            touch-action: manipulation; /* スマホでの操作を最適化 */
         }
         .map-container {
             position: relative;
@@ -31,12 +32,15 @@
             font-size: 12px;
             left: 110px; /* すべての駅の横位置を統一 */
         }
+        .event-station {
+            background-color: lightblue; /* イベントマスの色 */
+        }
         .player {
             position: absolute;
             width: 40px;
             height: 40px;
             transition: top 0.5s;
-            left: 100px; /* プレイヤーも横位置を統一 */
+            left: 100px; /* プレイヤーの横位置も統一 */
         }
         .player1 {
             filter: hue-rotate(200deg);
@@ -87,7 +91,7 @@
         }
     </style>
 </head>
-<body>
+<body onclick="rollDice()">
     <h1>🚆 出勤すごろくゲーム！</h1>
     <p>北千住駅から横浜駅へ通勤しよう！</p>
 
@@ -98,20 +102,19 @@
 
     <div class="map-container" id="map">
         <div class="station" id="station-0" style="top: 30px;">北千住</div>
-        <div class="station" id="station-1" style="top: 80px;">日暮里</div>
+        <div class="station event-station" id="station-1" style="top: 80px;">日暮里</div>
         <div class="station" id="station-2" style="top: 130px;">上野</div>
-        <div class="station" id="station-3" style="top: 180px;">秋葉原</div>
+        <div class="station event-station" id="station-3" style="top: 180px;">秋葉原</div>
         <div class="station" id="station-4" style="top: 230px;">東京</div>
-        <div class="station" id="station-5" style="top: 280px;">新橋</div>
+        <div class="station event-station" id="station-5" style="top: 280px;">新橋</div>
         <div class="station" id="station-6" style="top: 330px;">品川</div>
-        <div class="station" id="station-7" style="top: 380px;">川崎</div>
+        <div class="station event-station" id="station-7" style="top: 380px;">川崎</div>
         <div class="station" id="station-8" style="top: 430px;">横浜</div>
 
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1" style="top: 30px;">
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2" style="top: 30px;">
     </div>
 
-    <button onclick="rollDice()">🎲 サイコロを振る</button>
     <button onclick="resetGame()">🔄 最初から</button>
     <p class="dice" id="dice-result">サイコロ: 🎲</p>
     <p id="turn-info">プレイヤー1の番です</p>
@@ -188,12 +191,7 @@
         }
 
         function randomEvent() {
-            const events = [
-                { message: "🚆 快速で1駅進む！", stress: -5 },
-                { message: "🚧 満員電車！ストレス+10", stress: 10 },
-                { message: "⏳ 遅延！1回休み", stress: 20 }
-            ];
-            return events[Math.floor(Math.random() * events.length)];
+            return { message: "🚧 満員電車！ストレス+10", stress: 10 };
         }
     </script>
 </body>
