@@ -120,9 +120,9 @@
         <div class="station event-station" id="station-3">秋葉原</div>
         <div class="station" id="station-4">東京</div>
         <div class="station event-station" id="station-5">新橋</div>
-        <div class="station" id="station-6">品川</div>
+        <div class="station event-station" id="station-6">品川</div> <!-- ストレスマス追加 -->
         <div class="station event-station" id="station-7">川崎</div>
-        <div class="station" id="station-8">横浜</div>
+        <div class="station event-station" id="station-8">横浜</div> <!-- ストレスマス追加 -->
 
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player1" id="player1">
         <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" class="player player2" id="player2">
@@ -140,9 +140,9 @@
             { name: "秋葉原", event: true },
             { name: "東京", event: false },
             { name: "新橋", event: true },
-            { name: "品川", event: false },
+            { name: "品川", event: true },  // ストレスマス追加
             { name: "川崎", event: true },
-            { name: "横浜", event: false }
+            { name: "横浜", event: true }  // ストレスマス追加
         ];
 
         let positions = [0, 0];
@@ -203,7 +203,7 @@
         }
 
         function randomEvent() {
-            return { message: "🚧 満員電車！ストレス+10", stress: 10 };
+            return { message: "🚧 満員電車！ストレス+20", stress: 20 };
         }
     </script>
 </body>
