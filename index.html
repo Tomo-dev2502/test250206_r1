@@ -10,13 +10,14 @@
             text-align: center;
         }
         .board {
-            display: flex;
-            flex-wrap: wrap;
-            width: 220px;
+            display: grid;
+            grid-template-columns: repeat(10, 60px); /* 横方向の駅間距離を調整 */
+            gap: 5px;
+            justify-content: center;
             margin: 20px auto;
         }
         .cell {
-            width: 50px;
+            width: 60px;
             height: 50px;
             border: 1px solid black;
             display: flex;
@@ -25,6 +26,7 @@
             font-size: 12px;
             text-align: center;
             position: relative;
+            padding: 2px;
         }
         .player {
             position: absolute;
@@ -46,25 +48,20 @@
     <p id="turn-info">プレイヤー1の番です</p>
 
     <script>
-        const boardSize = 20;
-        let positions = [0, 0]; // プレイヤーの位置
-        let currentPlayer = 0; // 0: プレイヤー1, 1: プレイヤー2
-        const board = document.getElementById("board");
-
-        // 駅名リスト
         const stations = [
-            "北千住", "南千住", "日暮里", "上野", "御徒町",
-            "秋葉原", "神田", "東京", "新橋", "浜松町",
-            "田町", "品川", "大崎", "大井町", "蒲田",
-            "川崎", "鶴見", "東神奈川", "横浜"
+            "北千住", "", "日暮里", "", "上野", "秋葉原", "東京", "",
+            "新橋", "品川", "", "川崎", "鶴見", "横浜"
         ];
 
-        // イベント設定（通勤トラブル）
+        const boardSize = stations.length;
+        let positions = [0, 0]; // プレイヤーの位置
+        let currentPlayer = 0;
+        const board = document.getElementById("board");
+
+        // 通勤イベント設定
         const specialSpaces = {
-            4: { type: "warp", to: 7, message: "🚄 快速！東京駅へワープ！" },
-            8: { type: "back", to: 6, message: "🚧 乗り換えミス！2駅戻る！" },
-            12: { type: "delay", message: "🚃 山手線遅延！1回休み！" },
-            17: { type: "warp", to: 19, message: "🚄 京急特急！横浜へワープ！" }
+            6: { type: "back", to: 5, message: "🚧 東京駅での乗り換えミス！1駅戻る！" },
+            9: { type: "warp", to: 13, message: "🚄 品川駅から京急特急！横浜へワープ！" }
         };
 
         function createBoard() {
@@ -72,21 +69,20 @@
                 let cell = document.createElement("div");
                 cell.classList.add("cell");
                 cell.id = "cell-" + i;
-                cell.textContent = stations[i] || "横浜";
+                cell.textContent = stations[i];
 
                 if (specialSpaces[i]) {
                     if (specialSpaces[i].type === "warp") cell.classList.add("warp");
-                    if (specialSpaces[i].type === "delay") cell.classList.add("delay");
                     if (specialSpaces[i].type === "back") cell.classList.add("back");
                 }
 
                 let player1Icon = document.createElement("img");
-                player1Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png"; // 青い電車
+                player1Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png"; 
                 player1Icon.classList.add("player", "player1");
                 player1Icon.style.display = "none";
 
                 let player2Icon = document.createElement("img");
-                player2Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png"; // 赤い電車
+                player2Icon.src = "https://cdn-icons-png.flaticon.com/512/747/747602.png";
                 player2Icon.classList.add("player", "player2");
                 player2Icon.style.display = "none";
 
@@ -98,7 +94,7 @@
         }
 
         function rollDice() {
-            let diceRoll = Math.floor(Math.random() * 3) + 1; // 1～3のサイコロ
+            let diceRoll = Math.floor(Math.random() * 3) + 1;
             document.getElementById("dice-result").textContent = "サイコロ: 🎲 " + diceRoll;
             movePlayer(diceRoll);
         }
@@ -107,7 +103,7 @@
             positions[currentPlayer] += diceRoll;
 
             if (positions[currentPlayer] >= boardSize - 1) {
-                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！勝ち！`);
+                alert(`🎉 プレイヤー${currentPlayer + 1}が横浜駅に到着！通勤完了！`);
                 resetGame();
                 return;
             }
